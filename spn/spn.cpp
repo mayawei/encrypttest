@@ -114,9 +114,57 @@ unsigned short lineratk()
 	}
 	return (tL1 << 8) + tL2;
 }
-unsigned short difatk()
+unsigned int difatk()
 {
-	return 0;
+	for (int i = 0; i <= 15; i++)
+	{
+		for (int j = 0; j <= 15; j++)
+		{
+			c[i][j] = 0;
+		}
+	}
+	unsigned int y1 = 0, y2 = 0;
+	int i = 0;
+	for (unsigned short x1 = 0; i <= 0xffff; x1++,i++)
+	{
+		unsigned short x2 = x1 ^ 0x0b00;
+		y1 = spn(x1);
+		y2 = spn(x2);
+		if (((y1^y2) & 0xf0f0) != 0) continue;
+		else for (unsigned short L1 = 0; L1 <= 15; L1++)
+		{
+			for (unsigned short L2 = 0; L2 <= 15; L2++)
+			{
+				unsigned short v2 = L1 ^ ((y1 >> 8) & 0xf);
+				unsigned short v4 = L2 ^ (y1 & 0xf);
+				unsigned short u2 = unpis[v2];
+				unsigned short u4 = unpis[v4];
+				unsigned short v22 = L1 ^ ((y2 >> 8) & 0xf);
+				unsigned short v42 = L2 ^ (y2 & 0xf);
+				unsigned short u22 = unpis[v22];
+				unsigned short u42 = unpis[v42];
+				if (((u2 ^ u22) == 6) && ((u4 ^ u42) == 6))
+				{
+					c[L1][L2]++;
+				}
+			}
+		}
+	}
+	int max = -1;
+	unsigned short tL1,tL2;
+	for (unsigned short L1 = 0; L1 <= 15; L1++)
+	{
+		for (unsigned short L2 = 0; L2 <= 15; L2++)
+		{
+			if (c[L1][L2] > max)
+			{
+				max = c[L1][L2];
+				tL1 = L1;
+				tL2 = L2;
+			}
+		}
+	}
+	return ((tL1 << 8) + tL2);
 };
 unsigned int forceatk(unsigned short key)
 {
@@ -166,11 +214,10 @@ unsigned int forceatk(unsigned short key)
 }
 int main()
 {
-	unsigned short x = 0x3131;
-	unsigned short y = spn(x);
-
+	//unsigned short x = 0x3131;
+	//unsigned short y = spn(x);
 	//x = unspn(y);
-	//unsigned short L = lineratk();
+	unsigned short L = difatk();
 	//unsigned int i = forceatk(L);
 	return 0;
 }
